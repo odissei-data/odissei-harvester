@@ -15,7 +15,7 @@ def harvest_oai_pmh(endpoint_url, output_dir, params, verb):
     try:
         res = requests.get(endpoint_url, params=params)
         res.raise_for_status()  # Raise an exception if the request fails
-
+        logger.info('I am starting the harvest')
         while res.status_code == 200:
             # Parse the XML response
             root = ET.fromstring(res.content)
@@ -30,6 +30,7 @@ def harvest_oai_pmh(endpoint_url, output_dir, params, verb):
                 './/{http://www.openarchives.org/OAI/2.0/}resumptionToken')
             if resumption_token is None:
                 break
+            logger.info('I had a resumptionToken')
 
             res = requests.get(endpoint_url, params={
                 'verb': verb,
@@ -39,8 +40,7 @@ def harvest_oai_pmh(endpoint_url, output_dir, params, verb):
 
     except requests.exceptions.RequestException as e:
         logger.error(f"Error during GET request to OAI-PMH endpoint: {str(e)}")
-    except ET.ParseError as e:
-        logger.error(f"Error parsing XML response: {str(e)}")
+    logger.info('Harvest completed.')
 
 
 def extract_records(root, output_dir):
@@ -58,13 +58,13 @@ def extract_records(root, output_dir):
         file_name = record.find(
             './/{http://www.openarchives.org/OAI/2.0/}header/'
             '{http://www.openarchives.org/OAI/2.0/}identifier'
-        ).text.strip()
+        ).text.strip().replace('/', '_')
 
         output_file = os.path.join(output_dir,
                                    f"record_{file_name}.xml")
+        logger.info(f'File harvested: {file_name}')
         with open(output_file, 'wb') as f:
             f.write(ET.tostring(record, encoding='utf-8'))
-        print(f"Record {file_name} saved")
 
 
 def extract_identifiers(root, output_dir):
