@@ -28,7 +28,6 @@ s3client = get_s3_client()
 models.Base.metadata.create_all(bind=engine)
 
 
-# Dependency
 def get_db():
     db = SessionLocal()
     try:
@@ -56,7 +55,6 @@ async def start_liss_harvest(request: LISSRequest,
                              db: Session = Depends(get_db)):
     logger.info(f"Received request to start LISS harvest with data: {request}")
 
-    # Create harvest status in db
     harvest_status = crud.create_harvest(db)
     try:
         id_list = get_liss_id_list()
@@ -108,7 +106,6 @@ async def start_harvest(request: HarvestRequest,
     if request.oai_set is not None:
         params['set'] = request.oai_set
 
-    # Create harvest status in db
     harvest_status = crud.create_harvest(db)
 
     with tempfile.TemporaryDirectory() as temp_dir:

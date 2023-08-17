@@ -5,7 +5,6 @@ import requests
 
 import xml.etree.ElementTree as ET
 
-# Configure logging
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -14,8 +13,8 @@ logger = logging.getLogger(__name__)
 def harvest_oai_pmh(endpoint_url, output_dir, params, verb):
     try:
         res = requests.get(endpoint_url, params=params)
-        res.raise_for_status()  # Raise an exception if the request fails
-        logger.info('I am starting the harvest')
+        res.raise_for_status()
+        logger.info('Starting harvest')
         while res.status_code == 200:
             # Parse the XML response
             root = ET.fromstring(res.content)
@@ -30,13 +29,12 @@ def harvest_oai_pmh(endpoint_url, output_dir, params, verb):
                 './/{http://www.openarchives.org/OAI/2.0/}resumptionToken')
             if resumption_token is None:
                 break
-            logger.info('I had a resumptionToken')
 
             res = requests.get(endpoint_url, params={
                 'verb': verb,
                 'resumptionToken': resumption_token.text
             })
-            res.raise_for_status()  # Raise an exception if the request fails
+            res.raise_for_status()
 
     except requests.exceptions.RequestException as e:
         logger.error(f"Error during GET request to OAI-PMH endpoint: {str(e)}")
