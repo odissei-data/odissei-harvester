@@ -2,8 +2,6 @@ import boto3
 import os
 import logging
 
-from fastapi import HTTPException
-
 AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
 AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
 S3_STORAGE_ENDPOINT = os.environ['S3_STORAGE_ENDPOINT']
