@@ -1,13 +1,64 @@
 import json
 import os
 import logging
+import tempfile
+
 import requests
 
 import xml.etree.ElementTree as ET
 
+from botocore.client import BaseClient
+from fastapi import HTTPException
+from sqlalchemy.orm import Session
+
+import crud
+from S3Client import upload_files_to_s3
+from models import Harvest, HarvestStatus
+from schema.input import HarvestRequest
+
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+
+def harvest_metadata(request: HarvestRequest, db: Session,
+                     harvest_status: Harvest, s3client: BaseClient):
+    params = {
+        'verb': request.verb,
+        'metadataPrefix': request.metadata_prefix,
+    }
+
+    if request.oai_set is not None:
+        params['set'] = request.oai_set
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        try:
+            harvest_oai_pmh(request.oai_endpoint, temp_dir, params,
+                            request.verb)
+
+        except requests.exceptions.RequestException as e:
+            error_message = f"Failed to retrieve data for harvest: {e}"
+            logger.error(error_message)
+            crud.update_harvest_status(db, harvest_status.harvest_id,
+                                       HarvestStatus.FAILED,
+                                       error_message=error_message)
+            raise HTTPException(status_code=500, detail=error_message)
+
+        except ET.ParseError as e:
+            error_message = f"Error parsing XML response: {str(e)}"
+            logger.error(error_message)
+            crud.update_harvest_status(db, harvest_status.harvest_id,
+                                       HarvestStatus.FAILED,
+                                       error_message=error_message)
+            raise HTTPException(status_code=500, detail=error_message)
+
+        failed_files = upload_files_to_s3(s3client, temp_dir,
+                                                request.bucket_name)
+        if failed_files:
+            handle_failed_files(failed_files, db, harvest_status)
+        else:
+            crud.update_harvest_status(db, harvest_status.harvest_id,
+                                       status=HarvestStatus.COMPLETED)
 
 
 def harvest_oai_pmh(endpoint_url, output_dir, params, verb):
@@ -92,3 +143,15 @@ def extract_identifiers(root, output_dir):
     with open(identifiers_file_path, 'w',
               encoding='utf-8') as identifiers_file:
         json.dump(existing_data, identifiers_file)
+
+
+def handle_failed_files(failed_files, db: Session,
+                        harvest_status: Harvest):
+    # crud.create_failed_files(db, harvest_status.harvest_id,
+    #                          failed_files)
+    crud.update_harvest_status(
+        db,
+        harvest_status.harvest_id,
+        HarvestStatus.FAILED,
+        error_message=f"Some files failed to upload: {failed_files}"
+    )
