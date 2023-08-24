@@ -15,5 +15,5 @@ COPY pyproject.toml ./stub.toml
 
 RUN poetry install
 
-EXPOSE 7070
+EXPOSE 7890
 RUN pip install uvicorn

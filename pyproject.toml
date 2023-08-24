@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "oai_harvester"
 version = "0.1.0"
-description = "A project allowing one to set up a FastAPI based Microservice, using cookiecutter"
-authors = ["Thomas van Erven"]
+description = "An oai-pmh harvester that harvests metadata from data providers."
+authors = ["Fjodor van Rijsselberg"]
 
 [tool.poetry.dependencies]
 python = "^3.9.14"

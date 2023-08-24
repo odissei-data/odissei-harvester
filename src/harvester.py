@@ -53,7 +53,7 @@ def harvest_metadata(request: HarvestRequest, db: Session,
             raise HTTPException(status_code=500, detail=error_message)
 
         failed_files = upload_files_to_s3(s3client, temp_dir,
-                                                request.bucket_name)
+                                          request.bucket_name)
         if failed_files:
             handle_failed_files(failed_files, db, harvest_status)
         else:

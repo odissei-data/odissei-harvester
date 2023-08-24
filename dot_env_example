@@ -1,0 +1,16 @@
+CONTAINER_NAME=oai-harvester
+PORT=7890
+APPLICATION_DIR=src
+AWS_ACCESS_KEY_ID=aws_key
+AWS_SECRET_ACCESS_KEY=aws_access_key
+S3_STORAGE_ENDPOINT=s3_storage_endpoint
+
+LISS_ENDPOINT_URL=https://www.oai-pmh.centerdata.nl/lissdata_json/
+LISS_ENDPOINT_USERNAME=liss_username
+LISS_ENDPOINT_KEY=liss_key
+
+POSTGRES_USER=db_username
+POSTGRES_PASSWORD=db_password
+POSTGRES_DB=harvest-db
+POSTGRES_PORT=5432
+POSTGRES_DB_URL=postgresql://db_username:db_password@container_name:5432/harvest-db
