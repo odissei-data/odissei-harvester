@@ -1,7 +1,3 @@
-Absolutely, I've integrated the expected input and output for the different endpoints using the provided schemas and models. Here's the updated README with the additional information:
-
----
-
 # FastAPI Harvester
 
 A FastAPI application for harvesting metadata from external sources and storing it in an AWS S3 bucket.
