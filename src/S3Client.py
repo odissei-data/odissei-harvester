@@ -34,7 +34,6 @@ def create_bucket_if_not_exists(s3_client, bucket_name):
 
 
 def upload_files_to_s3(s3_client, source_dir, bucket_name, prefix=''):
-    failed_files = []
     create_bucket_if_not_exists(s3_client, bucket_name)
     for root, dirs, files in os.walk(source_dir):
         for file in files:
@@ -46,10 +45,9 @@ def upload_files_to_s3(s3_client, source_dir, bucket_name, prefix=''):
                 logging.info(
                     f"Uploaded {file} to S3 bucket: {bucket_name}"
                     f" with key: {s3_key}")
+
             except Exception as e:
-                failed_files.append(file)
                 logging.error(
                     f"Failed to upload {file} to S3 bucket: {bucket_name}"
                     f" with key: {s3_key}. Error: {e}")
     logger.info('Completed uploading harvested files to s3.')
-    return failed_files

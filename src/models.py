@@ -1,9 +1,7 @@
 import enum
 
 from sqlalchemy.orm import relationship
-
-from sqlalchemy import Column, Integer, String, DateTime, Enum, ForeignKey
-
+from sqlalchemy import Column, Integer, String, DateTime, Enum
 from database import Base
 
 
@@ -24,13 +22,3 @@ class Harvest(Base):
     start_time = Column(DateTime)
     end_time = Column(DateTime)
     error_message = Column(String)
-    failed_files = relationship('FailedFile', back_populates='harvest')
-
-
-class FailedFile(Base):
-    __tablename__ = 'failed_files'
-
-    id = Column(Integer, primary_key=True)
-    harvest_id = Column(Integer, ForeignKey('harvests.id'), nullable=False)
-    filename = Column(String, nullable=False)
-    harvest = relationship('Harvest', back_populates='failed_files')
