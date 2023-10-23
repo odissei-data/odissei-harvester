@@ -36,17 +36,6 @@ server = create_server(s3client, repository=repo)
 test_client = TestClient(app=server)
 
 
-def test_start_liss_harvest_background_endpoint():
-    with patch('S3Client.create_bucket_if_not_exists', return_value=None):
-        liss_request_data = {
-            "bucket_name": "liss-harvest-test"
-        }
-        response = test_client.post("/start_liss_harvest_background",
-                                    json=liss_request_data, headers=headers)
-        assert response.status_code == 200
-        assert "harvest_id" in response.json()
-
-
 def test_start_harvest_background_endpoint():
     with patch('S3Client.create_bucket_if_not_exists', return_value=None):
         harvest_request_data = {

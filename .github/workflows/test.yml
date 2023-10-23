@@ -38,5 +38,4 @@ jobs:
           export POSTGRES_DB_URL="test_url"
       - name: Run Pytest
         working-directory: src/
-        run: |
-        python -m pytest
+        run: python -m pytest
