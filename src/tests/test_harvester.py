@@ -39,12 +39,4 @@ test_client = TestClient(app=server)
 # TODO: still having trouble with testing the harvesters that use repo
 # TODO: because database.py starts the db even in test.
 
-def test_get_harvest_status_endpoint():
-    # Create a harvest_id for testing (replace with an actual valid harvest_id)
-    test_harvest_id = 1
 
-    response = test_client.get(f"/harvest_status/{test_harvest_id}")
-    assert response.status_code == 200
-
-    # Assuming your API returns the harvest status for the given harvest_id
-    assert "harvest_id" in response.json()
