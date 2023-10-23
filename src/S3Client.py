@@ -2,22 +2,17 @@ import boto3
 import os
 import logging
 
-AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
-AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
-S3_STORAGE_ENDPOINT = os.environ['S3_STORAGE_ENDPOINT']
-
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 
-def get_s3_client():
-    # Create an S3 client
+def get_s3_client(s3_storage_endpoint, access_key, secret_key):
     return boto3.client(
         's3',
-        endpoint_url=S3_STORAGE_ENDPOINT,
-        aws_access_key_id=AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+        endpoint_url=s3_storage_endpoint,
+        aws_access_key_id=access_key,
+        aws_secret_access_key=secret_key,
     )
 
 
