@@ -9,7 +9,6 @@ import xml.etree.ElementTree as ET
 
 from botocore.client import BaseClient
 from fastapi import HTTPException
-from harvest_repository import HarvestRepository
 from S3Client import upload_files_to_s3
 from models import Harvest
 from schema.input import HarvestRequest
@@ -19,7 +18,7 @@ logging.basicConfig(level=logging.INFO,
 logger = logging.getLogger(__name__)
 
 
-def harvest_metadata(request: HarvestRequest, harvest_repo: HarvestRepository,
+def harvest_metadata(request: HarvestRequest, harvest_repo,
                      harvest_status: Harvest, s3client: BaseClient):
     params = {
         'verb': request.verb,
