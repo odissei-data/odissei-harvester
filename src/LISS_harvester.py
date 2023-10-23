@@ -8,6 +8,7 @@ import requests
 from botocore.client import BaseClient
 from fastapi import HTTPException
 from S3Client import upload_files_to_s3
+from harvest_repository import HarvestRepository
 from models import Harvest
 from schema.input import LISSRequest
 
@@ -21,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 async def harvest_liss_metadata(request: LISSRequest,
-                                harvest_repo,
+                                harvest_repo: HarvestRepository,
                                 harvest_status: Harvest,
                                 s3client: BaseClient):
     try:

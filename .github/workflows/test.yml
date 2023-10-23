@@ -33,8 +33,10 @@ jobs:
         run: |
           cp -r pyproject.toml src/stub.toml
           cp -r pyproject.toml src/tests/stub.toml
-          cp -r dot_env_example .env
+      - name: Set up environment variables
+        run: |
+          export POSTGRES_DB_URL="test_url"
       - name: Run Pytest
         working-directory: src/
-        run: python -m pytest
-
+        run: |
+        python -m pytest
