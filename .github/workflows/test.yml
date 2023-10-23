@@ -33,7 +33,7 @@ jobs:
         run: |
           cp -r pyproject.toml src/stub.toml
           cp -r pyproject.toml src/tests/stub.toml
-          cp -r dot_en_example .env
+          cp -r dot_env_example .env
       - name: Run Pytest
         working-directory: src/
         run: python -m pytest
