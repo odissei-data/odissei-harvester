@@ -1,8 +1,6 @@
 import enum
 from sqlalchemy import Column, Integer, String, DateTime, Enum
-from sqlalchemy.orm import declarative_base
-
-Base = declarative_base()
+from database import Base
 
 
 class HarvestStatus(enum.Enum):

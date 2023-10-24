@@ -1,5 +1,5 @@
 import os
-
+import database
 from S3Client import get_s3_client
 from harvest_repository import HarvestRepository
 from server import create_server
@@ -13,5 +13,6 @@ s3client = get_s3_client(secret_key=AWS_SECRET_ACCESS_KEY,
                          s3_storage_endpoint=S3_STORAGE_ENDPOINT)
 
 harvest_repo = HarvestRepository()
+database.Base.metadata.create_all(bind=database.engine)
 
 server = create_server(s3client, repository=harvest_repo)
