@@ -3,7 +3,7 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 
-class HarvestRequest(BaseModel):
+class OAIHarvestRequest(BaseModel):
     metadata_prefix: str = Field(example="oai_dc")
     oai_set: Optional[str] = Field(None, example="Groningen_Social_Sciences")
     oai_endpoint: str = Field(example="https://dataverse.nl/oai")
@@ -11,5 +11,5 @@ class HarvestRequest(BaseModel):
     verb: str = Field(example="ListIdentifiers")
 
 
-class LISSRequest(BaseModel):
-    bucket_name: str = Field("liss-metadata")
+class HarvestRequest(BaseModel):
+    bucket_name: str = Field("example-bucket-name")
