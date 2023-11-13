@@ -1,12 +1,13 @@
 import logging
 
 from starlette.requests import Request
-from LISS_harvester import harvest_liss_metadata
+from harvester import harvest_metadata
 from fastapi import HTTPException, BackgroundTasks, APIRouter, Depends
 from auth import get_api_key
-from harvester import harvest_metadata
+from OAI_harvester import oai_harvest_metadata
+from harvest_client import LISSClient, CIDClient
 from schema.harvest import HarvestBase
-from schema.input import HarvestRequest, LISSRequest
+from schema.input import OAIHarvestRequest, HarvestRequest
 from version import get_version
 
 router = APIRouter()
@@ -34,14 +35,16 @@ async def get_status(request: Request, harvest_id: str):
 @router.post("/start_liss_harvest_background", response_model=HarvestBase,
              dependencies=[Depends(get_api_key)])
 async def start_liss_harvest_background(request: Request,
-                                        liss_request: LISSRequest,
+                                        liss_request: HarvestRequest,
                                         background_tasks: BackgroundTasks):
     logger.info(f"Starting LISS harvest with data: {liss_request}")
     harvest_repo = request.app.repository
+    harvest_client = LISSClient()
     s3client = request.app.s3client
     harvest_status = harvest_repo.create_harvest()
 
-    background_tasks.add_task(harvest_liss_metadata, liss_request,
+    background_tasks.add_task(harvest_metadata, liss_request,
+                              harvest_client,
                               harvest_repo,
                               harvest_status, s3client)
 
@@ -50,29 +53,45 @@ async def start_liss_harvest_background(request: Request,
 
 @router.post("/start_liss_harvest", response_model=HarvestBase,
              dependencies=[Depends(get_api_key)])
-async def start_liss_harvest(request: Request, liss_request: LISSRequest):
+async def start_liss_harvest(request: Request, liss_request: HarvestRequest):
     logger.info(f"Starting LISS harvest with data: {liss_request}")
     harvest_repo = request.app.repository
     s3client = request.app.s3client
+    harvest_client = LISSClient()
 
     harvest_status = harvest_repo.create_harvest()
-    await harvest_liss_metadata(liss_request, harvest_repo, harvest_status,
-                                s3client)
+    await harvest_metadata(liss_request, harvest_client, harvest_repo,
+                           harvest_status, s3client)
 
+    return harvest_status
+
+
+@router.post("/start_cid_harvest", response_model=HarvestBase,
+             dependencies=[Depends(get_api_key)])
+async def start_cid_harvest(request: Request, harvest_request: HarvestRequest):
+    logger.info(f"Starting CID harvest with data: {harvest_request}")
+    harvest_repo = request.app.repository
+    harvest_client = CIDClient()
+    s3client = request.app.s3client
+
+    harvest_status = harvest_repo.create_harvest()
+    await harvest_metadata(harvest_request, harvest_client, harvest_repo,
+                           harvest_status, s3client)
     return harvest_status
 
 
 @router.post("/start_harvest_background", response_model=HarvestBase,
              dependencies=[Depends(get_api_key)])
 async def start_harvest_background(request: Request,
-                                   harvest_request: HarvestRequest,
+                                   harvest_request: OAIHarvestRequest,
                                    background_tasks: BackgroundTasks):
     logger.info(f"Starting harvest with data: {harvest_request}")
     harvest_repo = request.app.repository
     s3client = request.app.s3client
 
     harvest_status = harvest_repo.create_harvest()
-    background_tasks.add_task(harvest_metadata, harvest_request, harvest_repo,
+    background_tasks.add_task(oai_harvest_metadata, harvest_request,
+                              harvest_repo,
                               harvest_status, s3client)
 
     return harvest_status
@@ -80,12 +99,13 @@ async def start_harvest_background(request: Request,
 
 @router.post("/start_harvest", response_model=HarvestBase,
              dependencies=[Depends(get_api_key)])
-async def start_harvest(request: Request, harvest_request: HarvestRequest):
+async def start_harvest(request: Request, harvest_request: OAIHarvestRequest):
     logger.info(f"Starting harvest with data: {harvest_request}")
     harvest_repo = request.app.repository
     s3client = request.app.s3client
 
     harvest_status = harvest_repo.create_harvest()
-    harvest_metadata(harvest_request, harvest_repo, harvest_status, s3client)
+    oai_harvest_metadata(harvest_request, harvest_repo, harvest_status,
+                         s3client)
 
     return harvest_status
