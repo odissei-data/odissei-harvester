@@ -1,4 +1,6 @@
 import asyncio
+import json
+import os
 import tempfile
 import logging
 import requests
@@ -24,7 +26,7 @@ async def harvest_metadata(request: HarvestRequest,
     try:
         id_list = harvest_client.get_id_list()
     except requests.exceptions.RequestException as e:
-        error_message = f"Harvest failed due to API error from LISS API: {e}."
+        error_message = f"Harvest failed due to API error from API: {e}."
         harvest_repo.update_harvest_failed(harvest_status.harvest_id,
                                            error_message=error_message)
         logging.error(error_message)
@@ -40,5 +42,14 @@ async def harvest_metadata(request: HarvestRequest,
 
 
 async def fetch_and_save_metadata(pid, temp_dir, harvest_client):
-    metadata_file = await asyncio.to_thread(harvest_client.fetch_metadata, pid)
-    harvest_client.save_metadata(pid, metadata_file, temp_dir)
+    dataset_metadata = await asyncio.to_thread(harvest_client.fetch_metadata,
+                                               pid)
+    save_metadata(pid, dataset_metadata, temp_dir)
+
+
+def save_metadata(dataset_id, dataset_metadata, temp_dir):
+    file_name = f"{dataset_id}.json"
+    output_file = os.path.join(temp_dir, file_name)
+    with open(output_file, "w") as f:
+        json.dump(dataset_metadata, f)
+    logger.info(f"Data for id {dataset_id} saved to {file_name}")
