@@ -30,6 +30,9 @@ def oai_harvest_metadata(request: OAIHarvestRequest,
     if request.oai_set is not None:
         params['set'] = request.oai_set
 
+    if request.timestamp is not None:
+        params['from'] = request.timestamp.strftime('%Y-%m-%dT%H:%M:%SZ')
+
     with tempfile.TemporaryDirectory() as temp_dir:
         try:
             harvest_oai_pmh(request.oai_endpoint, temp_dir, params,
@@ -57,6 +60,7 @@ def oai_harvest_metadata(request: OAIHarvestRequest,
 def harvest_oai_pmh(endpoint_url, output_dir, params, verb):
     try:
         res = requests.get(endpoint_url, params=params)
+        print(res.url)
         res.raise_for_status()
         logger.info('Starting harvest')
         while res.status_code == 200:
