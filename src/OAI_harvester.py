@@ -114,29 +114,39 @@ def extract_records(root, output_dir):
 
 
 def extract_identifiers(root, output_dir):
-    identifiers_file_path = os.path.join(output_dir, f"identifiers.json")
+    identifiers_file_path = os.path.join(output_dir, "identifiers.json")
+    deleted_identifiers_file_path = os.path.join(output_dir, "identifiers-deleted.json")
 
     # If the identifiers file already exists, load its contents as JSON.
-    if os.path.exists(identifiers_file_path):
-        with open(identifiers_file_path, 'r',
-                  encoding='utf-8') as identifiers_file:
-            existing_data = json.load(identifiers_file)
-    else:
-        # Otherwise, initialize an empty JSON object.
-        existing_data = {"pids": []}
+    existing_data = load_identifiers(identifiers_file_path)
+    deleted_existing_data = load_identifiers(deleted_identifiers_file_path)
 
-    for _, record in enumerate(root.findall(
-            './/{http://www.openarchives.org/OAI/2.0/}ListIdentifiers/'
-            '{http://www.openarchives.org/OAI/2.0/}header')):
-
+    for record in root.findall('.//{http://www.openarchives.org/OAI/2.0/}ListIdentifiers/{http://www.openarchives.org/OAI/2.0/}header'):
+        identifier = record.find('.//{http://www.openarchives.org/OAI/2.0/}identifier').text.strip()
         if record.get('status') == 'deleted':
-            continue
+            deleted_existing_data["pids"].append(identifier)
+        else:
+            existing_data["pids"].append(identifier)
 
-        identifier = record.find(
-            './/{http://www.openarchives.org/OAI/2.0/}identifier').text.strip()
-        existing_data["pids"].append(identifier)
+    write_identifiers_to_file(identifiers_file_path, existing_data)
+    write_identifiers_to_file(deleted_identifiers_file_path, deleted_existing_data)
 
-    # Write the updated JSON object to the file
-    with open(identifiers_file_path, 'w',
-              encoding='utf-8') as identifiers_file:
+def write_identifiers_to_file(identifiers_file_path, existing_data):
+    with open(identifiers_file_path, 'w', encoding='utf-8') as identifiers_file:
         json.dump(existing_data, identifiers_file)
+
+
+def load_identifiers(identifiers_file_path):
+    """
+    Loads the identifiers from the specified file path if it exists,
+    otherwise initializes an empty JSON object.
+
+    :param identifiers_file_path: Path to the file where identifiers are stored.
+    :return: A dictionary containing the identifiers.
+    """
+    if os.path.exists(identifiers_file_path):
+        with open(identifiers_file_path, 'r', encoding='utf-8') as identifiers_file:
+            return json.load(identifiers_file)
+    else:
+        return {"pids": []}
+
