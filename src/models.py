@@ -1,4 +1,6 @@
 import enum
+from typing import Optional
+
 from sqlalchemy import Column, Integer, String, DateTime, Enum
 from database import Base
 
@@ -19,4 +21,5 @@ class Harvest(Base):
                     default=HarvestStatus.PENDING)
     start_time = Column(DateTime)
     end_time = Column(DateTime)
-    error_message = Column(String)
+    error_message: Optional[str] = None
+
