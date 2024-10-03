@@ -21,5 +21,5 @@ class Harvest(Base):
                     default=HarvestStatus.PENDING)
     start_time = Column(DateTime)
     end_time = Column(DateTime)
-    error_message: Optional[str] = None
+    error_message = Optional[str] = None
 
