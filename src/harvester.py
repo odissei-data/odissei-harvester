@@ -24,7 +24,7 @@ async def harvest_metadata(request: HarvestRequest,
                            harvest_status: Harvest,
                            s3client: BaseClient):
     try:
-        id_list = harvest_client.get_id_list()
+        id_list = harvest_client.get_id_list(request.timestamp)
     except requests.exceptions.RequestException as e:
         error_message = f"Harvest failed due to API error from API: {e}."
         harvest_repo.update_harvest_failed(harvest_status.harvest_id,
