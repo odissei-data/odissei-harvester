@@ -19,7 +19,7 @@ class HarvestClient(ABC):
 
     """
     @abstractmethod
-    def get_id_list(self):
+    def get_id_list(self, from_date: str):
         pass
 
     @abstractmethod
@@ -30,10 +30,9 @@ class HarvestClient(ABC):
 class LISSClient(HarvestClient):
     """ Retrieves id's of all exposed liss datasets."""
 
-    def get_id_list(self):
-        response = requests.get(LISS_ENDPOINT_URL, auth=(
-            LISS_ENDPOINT_USERNAME, LISS_ENDPOINT_KEY))
-        response.raise_for_status()
+    def get_id_list(self, from_date: str):
+        url = f"{LISS_ENDPOINT_URL}?from={from_date}"
+        response = requests.get(url, auth=(LISS_ENDPOINT_USERNAME, LISS_ENDPOINT_KEY))
         json_data = response.json()
 
         return [item["id"] for item in json_data]
@@ -52,7 +51,7 @@ class LISSClient(HarvestClient):
 
 class CIDClient(HarvestClient):
 
-    def get_id_list(self):
+    def get_id_list(self, from_date: str):
         response = requests.get(CID_ENDPOINT_URL + 'package_list')
         response.raise_for_status()
         return response.json()['result']

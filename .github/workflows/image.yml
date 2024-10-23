@@ -16,7 +16,7 @@ jobs:
       - name: Set python version
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9.14'
+          python-version: '3.12'
       - name: Perform gruesome hack
         run: |
           cp -r pyproject.toml src/stub.toml
