@@ -60,7 +60,6 @@ def oai_harvest_metadata(request: OAIHarvestRequest,
 def harvest_oai_pmh(endpoint_url, output_dir, params, verb):
     try:
         res = requests.get(endpoint_url, params=params)
-        print(res.url)
         res.raise_for_status()
         logger.info('Starting harvest')
         while res.status_code == 200:

@@ -15,7 +15,8 @@ class HarvestRepository:
 
     def create_harvest(self):
         harvest_id = str(uuid.uuid4())
-        new_harvest = Harvest(harvest_id=harvest_id, start_time=datetime.now())
+        new_harvest = Harvest(harvest_id=harvest_id, start_time=datetime.now(),
+                              error_message="")
         self.session.add(new_harvest)
         self.session.commit()
         self.session.refresh(new_harvest)
