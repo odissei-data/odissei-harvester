@@ -18,6 +18,7 @@ sqlalchemy = "^2.0.20"
 psycopg2-binary = "^2.9.7"
 moto = "^4.2.3"
 httpx = "^0.25.0"
+ckanapi = "^4.8"
 
 [tool.poetry.dev-dependencies]
 ipython = "^8.5.0"
