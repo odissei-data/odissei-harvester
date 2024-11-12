@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "oai_harvester"
-version = "1.0.0"
+version = "1.1.0"
 description = "An oai-pmh harvester that harvests metadata from data providers."
 authors = ["Fjodor van Rijsselberg"]
 
