@@ -13,3 +13,4 @@ class OAIHarvestRequest(BaseModel):
 
 class HarvestRequest(BaseModel):
     bucket_name: str = Field("example-bucket-name")
+    timestamp: Optional[datetime] = Field(None, example="2004-12-10 17:30:00")
