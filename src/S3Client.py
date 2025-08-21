@@ -30,13 +30,13 @@ def create_bucket_if_not_exists(s3_client, bucket_name):
 
 def empty_bucket(s3_client, bucket_name):
     try:
-        objects = s3_client.list_objects_v2(Bucket=bucket_name)
-        if 'Contents' in objects:
-            for obj in objects['Contents']:
-                s3_client.delete_object(Bucket=bucket_name, Key=obj['Key'])
-            logging.info(f"Emptied S3 bucket: {bucket_name}")
-        else:
-            logging.info(f"S3 bucket {bucket_name} is already empty.")
+        paginator = s3_client.get_paginator('list_objects_v2')
+        for page in paginator.paginate(Bucket=bucket_name):
+            if 'Contents' in page:
+                delete_requests = [{'Key': obj['Key']} for obj in page['Contents']]
+                s3_client.delete_objects(Bucket=bucket_name, Delete={'Objects': delete_requests})
+                logging.info(f"Deleted {len(delete_requests)} objects from S3 bucket: {bucket_name}")
+        logging.info(f"Emptied S3 bucket: {bucket_name}")
     except Exception as e:
         logging.error(f"Failed to empty S3 bucket: {bucket_name}. Error: {e}")
 
