@@ -28,9 +28,23 @@ def create_bucket_if_not_exists(s3_client, bucket_name):
             logging.error(f"Error checking/creating bucket: {e}")
 
 
+def empty_bucket(s3_client, bucket_name):
+    try:
+        paginator = s3_client.get_paginator('list_objects_v2')
+        for page in paginator.paginate(Bucket=bucket_name):
+            if 'Contents' in page:
+                delete_requests = [{'Key': obj['Key']} for obj in page['Contents']]
+                s3_client.delete_objects(Bucket=bucket_name, Delete={'Objects': delete_requests})
+                logging.info(f"Deleted {len(delete_requests)} objects from S3 bucket: {bucket_name}")
+        logging.info(f"Emptied S3 bucket: {bucket_name}")
+    except Exception as e:
+        logging.error(f"Failed to empty S3 bucket: {bucket_name}. Error: {e}")
+
+
 def upload_files_to_s3(s3_client, source_dir, bucket_name, prefix=''):
     create_bucket_if_not_exists(s3_client, bucket_name)
-    for root, dirs, files in os.walk(source_dir):
+    empty_bucket(s3_client, bucket_name)
+    for root, _, files in os.walk(source_dir):
         for file in files:
             source_path = os.path.join(root, file)
             s3_key = os.path.join(prefix, file)
