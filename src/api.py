@@ -5,7 +5,7 @@ from harvester import harvest_metadata
 from fastapi import HTTPException, BackgroundTasks, APIRouter, Depends
 from auth import get_api_key
 from OAI_harvester import oai_harvest_metadata
-from harvest_client import LISSClient, CIDClient
+from harvest_client import LISSClient
 from schema.harvest import HarvestBase
 from schema.input import OAIHarvestRequest, HarvestRequest
 from version import get_version
@@ -63,20 +63,6 @@ async def start_liss_harvest(request: Request, liss_request: HarvestRequest):
     await harvest_metadata(liss_request, harvest_client, harvest_repo,
                            harvest_status, s3client)
 
-    return harvest_status
-
-
-@router.post("/start_cid_harvest", response_model=HarvestBase,
-             dependencies=[Depends(get_api_key)])
-async def start_cid_harvest(request: Request, harvest_request: HarvestRequest):
-    logger.info(f"Starting CID harvest with data: {harvest_request}")
-    harvest_repo = request.app.repository
-    harvest_client = CIDClient()
-    s3client = request.app.s3client
-
-    harvest_status = harvest_repo.create_harvest()
-    await harvest_metadata(harvest_request, harvest_client, harvest_repo,
-                           harvest_status, s3client)
     return harvest_status
 
 
