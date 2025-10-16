@@ -3,7 +3,7 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-POSTGRES_DB_URL = os.environ['POSTGRES_DB_URL']
+POSTGRES_DB_URL = os.environ.get('POSTGRES_DB_URL', 'postgresql://user:password@localhost/dbname')
 
 engine = create_engine(POSTGRES_DB_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
