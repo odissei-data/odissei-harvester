@@ -4,9 +4,9 @@ import requests
 from abc import ABC, abstractmethod
 
 
-LISS_ENDPOINT_URL = os.environ['LISS_ENDPOINT_URL']
-LISS_ENDPOINT_USERNAME = os.environ['LISS_ENDPOINT_USERNAME']
-LISS_ENDPOINT_KEY = os.environ['LISS_ENDPOINT_KEY']
+LISS_ENDPOINT_URL = os.environ.get('LISS_ENDPOINT_URL', 'https://www.oai-pmh.centerdata.nl/lissdata_json/')
+LISS_ENDPOINT_USERNAME = os.environ.get('LISS_ENDPOINT_USERNAME', 'liss_username')
+LISS_ENDPOINT_KEY = os.environ.get('LISS_ENDPOINT_KEY', 'liss_key')
 VERIFY_SSL = os.environ.get('VERIFY_SSL', 'True').lower() == 'true'
 
 logging.basicConfig(level=logging.INFO,
