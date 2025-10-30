@@ -8,7 +8,7 @@ class OAIHarvestRequest(BaseModel):
     oai_endpoint: str = Field(default="https://dataverse.nl/oai", json_schema_extra={"example": "https://dataverse.nl/oai"})
     bucket_name: str = Field(default="dataverse-nl", json_schema_extra={"example": "dataverse-nl"})
     verb: str = Field(default="ListIdentifiers", json_schema_extra={"example": "ListIdentifiers"})
-    oai_set: Optional[str] = Field(default="Groningen_Social_Sciences", json_schema_extra={"example": "Groningen_Social_Sciences"})
+    oai_set: Optional[str] = Field(default=None, json_schema_extra={"example": "Groningen_Social_Sciences"})
     timestamp: Optional[datetime] = Field(default=None, json_schema_extra={"example": "2024-05-30 14:30:00"})
 
 
