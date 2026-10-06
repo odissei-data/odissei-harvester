@@ -1,4 +1,5 @@
 import boto3
+from botocore.config import Config
 import os
 import logging
 
@@ -7,12 +8,19 @@ logging.basicConfig(level=logging.INFO,
 logger = logging.getLogger(__name__)
 
 
+# boto3's defaults (60 s connect timeout, 5 attempts) let one call to an
+# unreachable S3 store hang for about five minutes.
+TIMEOUTS = Config(connect_timeout=5,
+                  retries={"mode": "standard", "total_max_attempts": 3})
+
+
 def get_s3_client(s3_storage_endpoint, access_key, secret_key):
     return boto3.client(
         's3',
         endpoint_url=s3_storage_endpoint,
         aws_access_key_id=access_key,
         aws_secret_access_key=secret_key,
+        config=TIMEOUTS,
     )
 
 
