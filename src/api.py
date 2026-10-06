@@ -23,6 +23,11 @@ async def info():
     return {"version": result}
 
 
+@router.get("/health")
+async def health():
+    return {"status": "ok", "version": get_version()}
+
+
 @router.get("/harvest_status/{harvest_id}", response_model=HarvestBase)
 async def get_status(request: Request, harvest_id: str):
     harvest_repo = request.app.repository
