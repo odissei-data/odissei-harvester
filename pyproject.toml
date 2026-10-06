@@ -1,6 +1,7 @@
 [tool.poetry]
 name = "oai_harvester"
-version = "1.3.1"
+# The release version is the git tag; images get it as APP_VERSION.
+version = "0.0.0"
 description = "An oai-pmh harvester that harvests metadata from data providers."
 authors = ["Fjodor van Rijsselberg"]
 package-mode = false

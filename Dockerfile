@@ -11,9 +11,12 @@ RUN poetry install
 
 WORKDIR src
 COPY src/ .
-COPY pyproject.toml ./stub.toml
 
 RUN poetry install
 
 EXPOSE 7890
 RUN pip install uvicorn
+
+ARG APP_VERSION=v0.0.0-dev
+ENV APP_VERSION=${APP_VERSION}
+LABEL org.opencontainers.image.version="${APP_VERSION}"
