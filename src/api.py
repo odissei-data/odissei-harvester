@@ -21,12 +21,6 @@ logging.basicConfig(level=logging.INFO,
 logger = logging.getLogger(__name__)
 
 
-@router.get("/version")
-async def info():
-    result = get_version()
-    return {"version": result}
-
-
 @router.get("/health")
 async def health():
     return {"status": "ok", "version": get_version()}
