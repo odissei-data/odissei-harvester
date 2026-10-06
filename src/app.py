@@ -1,6 +1,6 @@
 import os
 import database
-from S3Client import get_s3_client
+from S3Client import READY_TIMEOUTS, get_s3_client
 from harvest_repository import HarvestRepository
 from server import create_server
 
@@ -16,3 +16,7 @@ harvest_repo = HarvestRepository()
 database.Base.metadata.create_all(bind=database.engine)
 
 server = create_server(s3client, repository=harvest_repo)
+server.ready_s3client = get_s3_client(secret_key=AWS_SECRET_ACCESS_KEY,
+                                      access_key=AWS_ACCESS_KEY_ID,
+                                      s3_storage_endpoint=S3_STORAGE_ENDPOINT,
+                                      config=READY_TIMEOUTS)

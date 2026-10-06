@@ -3,6 +3,10 @@ import logging
 from starlette.requests import Request
 from harvester import harvest_metadata
 from fastapi import HTTPException, BackgroundTasks, APIRouter, Depends
+from fastapi.responses import JSONResponse
+from sqlalchemy import text
+
+import database
 from auth import get_api_key
 from OAI_harvester import oai_harvest_metadata
 from harvest_client import LISSClient
@@ -26,6 +30,28 @@ async def info():
 @router.get("/health")
 async def health():
     return {"status": "ok", "version": get_version()}
+
+
+def _state(check):
+    try:
+        check()
+    except Exception:
+        return "unreachable"
+    return "ok"
+
+
+def _postgres():
+    with database.ready_engine.connect() as connection:
+        connection.execute(text("SELECT 1"))
+
+
+@router.get("/ready")
+def ready(request: Request):
+    status = {"postgres": _state(_postgres),
+              "s3": _state(request.app.ready_s3client.list_buckets)}
+    ok = all(state == "ok" for state in status.values())
+    return JSONResponse({"status": "ok" if ok else "not ready", **status},
+                        200 if ok else 503)
 
 
 @router.get("/harvest_status/{harvest_id}", response_model=HarvestBase)

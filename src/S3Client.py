@@ -12,15 +12,18 @@ logger = logging.getLogger(__name__)
 # unreachable S3 store hang for about five minutes.
 TIMEOUTS = Config(connect_timeout=5,
                   retries={"mode": "standard", "total_max_attempts": 3})
+# The readiness check gives up quickly instead.
+READY_TIMEOUTS = Config(connect_timeout=2, read_timeout=2,
+                        retries={"mode": "standard", "total_max_attempts": 1})
 
 
-def get_s3_client(s3_storage_endpoint, access_key, secret_key):
+def get_s3_client(s3_storage_endpoint, access_key, secret_key, config=TIMEOUTS):
     return boto3.client(
         's3',
         endpoint_url=s3_storage_endpoint,
         aws_access_key_id=access_key,
         aws_secret_access_key=secret_key,
-        config=TIMEOUTS,
+        config=config,
     )
 
 
