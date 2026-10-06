@@ -12,7 +12,7 @@ from OAI_harvester import oai_harvest_metadata
 from harvest_client import LISSClient
 from schema.harvest import HarvestBase
 from schema.input import OAIHarvestRequest, HarvestRequest
-from version import get_version
+from version import get_image, get_version
 
 router = APIRouter()
 
@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 @router.get("/health")
 async def health():
-    return {"status": "ok", "version": get_version()}
+    return {"status": "ok", "version": get_version(), "image": get_image()}
 
 
 def _state(check):
