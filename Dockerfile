@@ -4,7 +4,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 WORKDIR root
-COPY pyproject.toml .
+COPY pyproject.toml poetry.lock ./
 RUN pip install poetry
 RUN poetry config virtualenvs.create false
 RUN poetry install
